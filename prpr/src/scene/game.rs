@@ -1301,6 +1301,7 @@ impl Scene for GameScene {
                         NextScene::Pop
                     }
                 }
+                // trigger build
                 // not sure if they need result. just keep it
                 GameMode::Exercise | GameMode::NoRetry | GameMode::View => NextScene::Pop,
                 GameMode::TweakOffset => NextScene::PopWithResult(Box::new(None::<f32>)),
