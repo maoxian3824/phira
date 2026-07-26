@@ -17,11 +17,11 @@ use std::{cell::RefCell, collections::HashMap, mem, num::FpCategory};
 use tracing::debug;
 
 pub const FLICK_SPEED_THRESHOLD: f32 = 0.8;
-pub const LIMIT_PERFECT: f64 = 0.08;
-pub const LIMIT_GOOD: f64 = 0.16;
-pub const LIMIT_BAD: f64 = 0.22;
-pub const UP_TOLERANCE: f64 = 0.05;
-pub const DIST_FACTOR: f64 = 0.2;
+pub const LIMIT_PERFECT: f64 = 0.15;
+pub const LIMIT_GOOD: f64 = 0.25;
+pub const LIMIT_BAD: f64 = 0.35;
+pub const UP_TOLERANCE: f64 = 0.10;
+pub const DIST_FACTOR: f64 = 0.4;
 
 const EARLY_OFFSET: f64 = 0.07;
 
@@ -213,7 +213,7 @@ impl JudgeInner {
     }
 
     pub fn accuracy(&self) -> f64 {
-        (self.counts[0] as f64 + self.counts[1] as f64 * 0.65) / self.num_of_notes as f64
+        (self.counts[0] as f64 + self.counts[1] as f64 * 0.85) / self.num_of_notes as f64
     }
 
     pub fn real_time_accuracy(&self) -> f64 {
@@ -221,7 +221,7 @@ impl JudgeInner {
         if cnt == 0 {
             return 1.;
         }
-        (self.counts[0] as f64 + self.counts[1] as f64 * 0.65) / cnt as f64
+        (self.counts[0] as f64 + self.counts[1] as f64 * 0.85) / cnt as f64
     }
 
     pub fn score(&self) -> u32 {
@@ -229,7 +229,7 @@ impl JudgeInner {
         if self.counts[0] == self.num_of_notes {
             TOTAL
         } else {
-            let score = (0.9 * self.accuracy() + self.max_combo as f64 / self.num_of_notes as f64 * 0.1) * TOTAL as f64;
+            let score = (0.95 * self.accuracy() + self.max_combo as f64 / self.num_of_notes as f64 * 0.15) * TOTAL as f64;
             score.round() as u32
         }
     }
