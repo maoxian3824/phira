@@ -13,6 +13,7 @@ on:
 env:
   ANDROID_NDK_VERSION: r25c
   PRPR_AVC_FFMPEG_VERSION: 20260408_v0
+  API_LEVEL: 21
 
 jobs:
   build:
@@ -29,6 +30,7 @@ jobs:
           curl -fL --retry 3 -o ndk.zip https://dl.google.com/android/repository/android-ndk-${ANDROID_NDK_VERSION}-linux.zip
           unzip -q ndk.zip
           echo "ANDROID_NDK_HOME=$PWD/android-ndk-${ANDROID_NDK_VERSION}" >> $GITHUB_ENV
+          echo "ANDROID_NDK_ROOT=$PWD/android-ndk-${ANDROID_NDK_VERSION}" >> $GITHUB_ENV
           echo "$PWD/android-ndk-${ANDROID_NDK_VERSION}/toolchains/llvm/prebuilt/linux-x86_64/bin" >> $GITHUB_PATH
 
       - name: Setup Rust
@@ -50,9 +52,18 @@ jobs:
 
       - name: Build libphira.so
         run: |
+          NDK=$PWD/android-ndk-${ANDROID_NDK_VERSION}
+          TOOLCHAIN=$NDK/toolchains/llvm/prebuilt/linux-x86_64
+          TARGET=aarch64-linux-android
+          # NDK r25 使用 llvm/clang 作为链接器
+          export CARGO_TARGET_AARCH64_LINUX_ANDROID_LINKER=$TOOLCHAIN/bin/$TARGET${API_LEVEL}-clang
+          # 把 NDK 自带的系统库路径（libOpenSLES.so, libandroid.so 等）加入搜索路径
+          export RUSTFLAGS="-L $TOOLCHAIN/sysroot/usr/lib/$TARGET/${API_LEVEL}"
           cargo build --release --target aarch64-linux-android -p phira
         env:
           OPENSSL_STATIC: "1"
+          ANDROID_NDK_HOME: ${{ env.ANDROID_NDK_HOME }}
+          API_LEVEL: ${{ env.API_LEVEL }}
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
