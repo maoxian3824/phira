@@ -11,7 +11,7 @@ on:
       - 'Cargo.lock'
 
 env:
-  ANDROID_NDK_VERSION: r25c
+  ANDROID_NDK_VERSION: r27c
   PRPR_AVC_FFMPEG_VERSION: 20260408_v0
   API_LEVEL: 21
 
